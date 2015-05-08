@@ -1,11 +1,11 @@
-import scala.reflect.macros.Context
-import scala.language.experimental.macros
-import scala.annotation.StaticAnnotation
+package macros
 
-object helloMacro {
-  def impl(c: Context)(annottees: c.Expr[Any]*): c.Expr[Any] = {
+import scala.reflect.macros.whitebox
+
+object SimpleCompanionImpl {
+
+  def impl(c: whitebox.Context)(annottees: c.Expr[Any]*): c.Expr[Any] = {
     import c.universe._
-    import Flag._
     val result = {
       annottees.map(_.tree).toList match {
         case q"object $name extends ..$parents { ..$body }" :: Nil =>
@@ -19,8 +19,5 @@ object helloMacro {
     }
     c.Expr[Any](result)
   }
-}
 
-class hello extends StaticAnnotation {
-  def macroTransform(annottees: Any*) = macro helloMacro.impl
 }
