@@ -12,6 +12,7 @@ object SimpleCompanionImpl {
           q"""
             object $name extends ..$parents {
               def hello: ${typeOf[String]} = "hello"
+              override def toString: ${typeOf[String]} = s"custom toString: " + hello
               ..$body
             }
           """
