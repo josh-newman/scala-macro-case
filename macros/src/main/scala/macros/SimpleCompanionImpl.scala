@@ -11,9 +11,10 @@ object SimpleCompanionImpl {
         case q"object $name extends ..$parents { ..$body }" :: Nil =>
           q"""
             object $name extends ..$parents {
-              def hello: ${typeOf[String]} = "hello"
-              override def toString: ${typeOf[String]} = s"custom toString: " + hello
               ..$body
+              override def toString: ${typeOf[String]} = {
+                s"custom toString for " + ${Constant(name.decodedName.toString)}
+              }
             }
           """
       }
