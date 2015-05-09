@@ -3,6 +3,8 @@
 A playspace for Scala macros that implements functionality similar to case classes,
 but for `trait`s.
 
+## Records
+
 For example, with a record definition called `Complex`:
 ```scala
 @Record
@@ -30,5 +32,12 @@ Complex[real=1.0, imag=2.0]
 1.4142135623730951
 Some((1.0,2.0))
 ```
+
+## How to run
+
+Check out the repository and run `sbt core/run`. Note that you may need to `clean` between runs
+while editing macro code.
+
+## Credit
 
 Initial project setup was adapted from https://github.com/scalamacros/sbt-example-paradise.
