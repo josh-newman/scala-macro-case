@@ -18,7 +18,7 @@ object SimpleCompanionImpl {
     val recordCompanionSymbol = recordCompanionTree match {
       case q"object $name" =>
         ownerScope.find(_.name == name).getOrElse {
-          c.abort(c.enclosingPosition, s"Name $name not found in scope $owner")
+          c.abort(c.enclosingPosition, s"Object $name not found in scope $owner")
         }
     }
 
@@ -30,18 +30,29 @@ object SimpleCompanionImpl {
 
     val fieldMethods = recordSymbol.info.decls.collect {
       case method: MethodSymbol if isRecordField(method) => method
-    }
+    }.toList
 
-    println("field methods: " + fieldMethods)
+    val fieldNames = fieldMethods.map(_.name)
+    val fieldTypes = fieldMethods.map(_.returnType)
 
-    val result = annottees.map(_.tree).toList match {
-      case q"object $name extends ..$parents { ..$body }" :: Nil =>
+    println("field names: " + fieldNames)
+    println("field types: " + fieldTypes)
+
+    val result = recordCompanionTree match {
+      case q"object $name extends ..$parents { ..$body }" =>
+        val generatedToString = {
+          val fieldNamesString = fieldNames.mkString(", ")
+          q"""
+            override def toString: ${typeOf[String]} = {
+              ${Constant(name.decodedName.toString)} + "[" + ${Constant(fieldNamesString)} + "]"
+            }
+          """
+        }
+
         q"""
           object $name extends ..$parents {
             ..$body
-            override def toString: ${typeOf[String]} = {
-              s"custom toString for " + ${Constant(name.decodedName.toString)}
-            }
+            $generatedToString
           }
         """
     }
