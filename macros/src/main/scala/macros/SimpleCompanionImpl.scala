@@ -23,6 +23,7 @@ object SimpleCompanionImpl {
     }
 
     val recordSymbol = recordCompanionSymbol.companion
+    val recordTypeName = recordSymbol.name.toTypeName
 
     def isRecordField(method: MethodSymbol): Boolean = {
       method.isAbstract && method.isPublic && method.paramLists.isEmpty
@@ -49,9 +50,28 @@ object SimpleCompanionImpl {
           """
         }
 
+        val generatedApply = {
+          val paramsAndImpls = fieldMethods.map { method =>
+            val paramName = c.freshName(method.name)
+            val paramDef = q"val $paramName: ${method.returnType}"
+            val implDef = q"override val ${method.name}: ${method.returnType} = $paramName"
+            (paramDef, implDef)
+          }
+
+          val paramss = paramsAndImpls.map(_._1) :: Nil
+          val impls = paramsAndImpls.map(_._2)
+
+          q"""
+            def apply(...$paramss): $recordTypeName = new $recordTypeName {
+              ..$impls
+            }
+          """
+        }
+
         q"""
           object $name extends ..$parents {
             ..$body
+            $generatedApply
             $generatedToString
           }
         """
