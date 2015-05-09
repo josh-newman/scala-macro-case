@@ -1,7 +1,6 @@
 package examples
 
 import macros.Record
-import macros.RecordCompanion
 
 @Record
 trait Complex {
