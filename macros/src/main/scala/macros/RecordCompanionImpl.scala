@@ -2,7 +2,7 @@ package macros
 
 import scala.reflect.macros.whitebox
 
-object SimpleCompanionImpl {
+private[macros] object RecordCompanionImpl {
 
   def impl(c: whitebox.Context)(annottees: c.Expr[Any]*): c.Expr[Any] = {
     import c.universe._

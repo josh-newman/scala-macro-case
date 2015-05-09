@@ -1,6 +1,6 @@
 package examples
 
-import macros.SimpleCompanion
+import macros.RecordCompanion
 
 trait Complex {
   def real: Double
@@ -10,5 +10,5 @@ trait Complex {
   def abs: Double = Math.sqrt(real * real + imag * imag)
 }
 
-@SimpleCompanion
+@RecordCompanion
 object Complex
