@@ -33,16 +33,10 @@ object SimpleCompanionImpl {
       case method: MethodSymbol if isRecordField(method) => method
     }.toList
 
-    val fieldNames = fieldMethods.map(_.name)
-    val fieldTypes = fieldMethods.map(_.returnType)
-
-    println("field names: " + fieldNames)
-    println("field types: " + fieldTypes)
-
     val result = recordCompanionTree match {
       case q"object $name extends ..$parents { ..$body }" =>
         val generatedToString = {
-          val fieldNamesString = fieldNames.mkString(", ")
+          val fieldNamesString = fieldMethods.map(_.name).mkString(", ")
           q"""
             override def toString: ${typeOf[String]} = {
               ${Constant(name.decodedName.toString)} + "[" + ${Constant(fieldNamesString)} + "]"
@@ -68,10 +62,33 @@ object SimpleCompanionImpl {
           """
         }
 
+        val generatedUnapply = {
+          val paramName = c.freshName(TermName("record"))
+          val param = q"val $paramName: $recordTypeName"
+
+          val arity = fieldMethods.size
+          val tupleName = TypeName(s"Tuple$arity")
+          val fieldTypes = fieldMethods.map(_.returnType)
+          val tupleTree = tq"_root_.scala.$tupleName[..$fieldTypes]"
+
+          val returnTypeTree = tq"_root_.scala.Some[$tupleTree]"
+
+          val tupleArguments = fieldMethods.map { method =>
+            q"$paramName.${method.name}"
+          }
+
+          q"""
+            def unapply(...${List(List(param))}): $returnTypeTree = {
+              _root_.scala.Some(new $tupleTree(..$tupleArguments))
+            }
+          """
+        }
+
         q"""
           object $name extends ..$parents {
             ..$body
             $generatedApply
+            $generatedUnapply
             $generatedToString
           }
         """
