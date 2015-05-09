@@ -12,5 +12,20 @@ trait Complex {
   def abs: Double = Math.sqrt(real * real + imag * imag)
 }
 
-@RecordCompanion
-object Complex
+@Record
+trait Vector3 {
+  def x: Double
+  def y: Double
+  def z: Double
+
+  def length: Double = Math.sqrt(x * x + y * y + z * z)
+}
+
+object Vector3 {
+
+  def unit(other: Vector3): Vector3 = {
+    val otherLength = other.length
+    Vector3(other.x / otherLength, other.y / otherLength, other.z / otherLength)
+  }
+
+}
