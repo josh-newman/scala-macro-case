@@ -1,7 +1,9 @@
 package examples
 
+import macros.Record
 import macros.RecordCompanion
 
+@Record
 trait Complex {
   def real: Double
   def imag: Double

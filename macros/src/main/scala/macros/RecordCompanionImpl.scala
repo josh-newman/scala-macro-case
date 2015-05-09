@@ -34,6 +34,7 @@ private[macros] object RecordCompanionImpl {
     }.toList
 
     val result = recordCompanionTree match {
+      // TODO: Add other quasiquotes `object` fields.
       case q"object $name extends ..$parents { ..$body }" =>
         val generatedApply = {
           val paramsAndImpls = fieldMethods.map { method =>
@@ -78,8 +79,8 @@ private[macros] object RecordCompanionImpl {
         val generatedToString = {
           val fieldNamesString = fieldMethods.map(_.name).mkString(", ")
           q"""
-            override def toString: ${typeOf[String]} = {
-              ${Constant(name.decodedName.toString)} + "[" + ${Constant(fieldNamesString)} + "]"
+            override def toString(): ${typeOf[String]} = {
+              ${Constant(name.toString)} + "[" + ${Constant(fieldNamesString)} + "]"
             }
           """
         }
