@@ -35,15 +35,6 @@ private[macros] object RecordCompanionImpl {
 
     val result = recordCompanionTree match {
       case q"object $name extends ..$parents { ..$body }" =>
-        val generatedToString = {
-          val fieldNamesString = fieldMethods.map(_.name).mkString(", ")
-          q"""
-            override def toString: ${typeOf[String]} = {
-              ${Constant(name.decodedName.toString)} + "[" + ${Constant(fieldNamesString)} + "]"
-            }
-          """
-        }
-
         val generatedApply = {
           val paramsAndImpls = fieldMethods.map { method =>
             val paramName = c.freshName(method.name)
@@ -80,6 +71,15 @@ private[macros] object RecordCompanionImpl {
           q"""
             def unapply(...${List(List(param))}): $returnTypeTree = {
               _root_.scala.Some(new $tupleTree(..$tupleArguments))
+            }
+          """
+        }
+
+        val generatedToString = {
+          val fieldNamesString = fieldMethods.map(_.name).mkString(", ")
+          q"""
+            override def toString: ${typeOf[String]} = {
+              ${Constant(name.decodedName.toString)} + "[" + ${Constant(fieldNamesString)} + "]"
             }
           """
         }
