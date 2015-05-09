@@ -38,6 +38,13 @@ Some((1.0,2.0))
 Check out the repository and run `sbt core/run`. Note that you may need to `clean` between runs
 while editing macro code.
 
+## TODO
+
+* `equals`, `hashCode`, and `copy` for records.
+* Require `sealed` records.
+* The original purpose of this project: some kind of of `Validator` interface/typeclass and
+  construction methods (in record companions) that construct validated records.
+
 ## Credit
 
 Initial project setup was adapted from https://github.com/scalamacros/sbt-example-paradise.

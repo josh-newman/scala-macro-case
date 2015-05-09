@@ -13,13 +13,7 @@ private[macros] object RecordImpl {
       case _ => c.abort(c.enclosingPosition, s"Expected an annotated `trait` and its companion")
     }
 
-    // TODO: Dedupe with `RecordCompanionImpl`.
-    def isRecordField(method: MethodSymbol): Boolean = {
-      method.isAbstract && method.isPublic && method.paramLists.isEmpty
-    }
-
     val result = recordTree match {
-      // TODO: Add other quasiquotes `trait` fields.
       case q"""
         $recordMods trait $recordTypeName[..$recordTypeParams]
           extends { ..$recordEarlyDefns }
